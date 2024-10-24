@@ -2,6 +2,7 @@ import * as React from "react"
 import SearchForm from "./components/SearchForm"
 import ResultsHeader from "./components/ResultsHeader"
 import ResultsList from "./components/ResultsList"
+import { fetchData } from "./utils/fetchData"
 
 import "./styles.css"
 
@@ -13,6 +14,21 @@ export default function App() {
   const [resultsPerPage, setResultsPerPage] = React.useState(0)
   const [totalPages, setTotalPages] = React.useState(50)
   const [loading, setLoading] = React.useState(false)
+
+  React.useEffect(() => {
+    setLoading(true)
+    fetchData({ query, tag, page })
+      .then(({ results, pages, resultsPerPage }) => {
+        setResults(results)
+        setResultsPerPage(resultsPerPage)
+        setTotalPages(pages)
+        setLoading(false)
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error)
+        setLoading(false)
+      })
+  }, [query, tag, page])
 
   const handleSearch = (e) => {
     setQuery(e.target.value)
